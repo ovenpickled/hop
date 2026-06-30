@@ -1,11 +1,13 @@
 package store
 
-import {
+import (
 	"context"
 	"fmt"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"time"
-}
+)
+
+const CacheDuration = 6 * time.Hour
 
 // struct wrapper around the raw Redis client
 type StorageService struct {
@@ -40,7 +42,7 @@ func InitializeStore() *StorageService {
 func SaveUrlMapping(shortUrl string, originalUrl string, userId string) {
 	err := storeService.redisClient.Set(ctx, shortUrl, originalUrl, CacheDuration).Err()
 	if err != nil {
-		panic(fmt.Sprintf("Failed saaving key url | Error: %v - shortUrl: %s - originalUrl: %s\n", err, shortUrl, originalUrl))
+		panic(fmt.Sprintf("Failed saving key url | Error: %v - shortUrl: %s - originalUrl: %s\n", err, shortUrl, originalUrl))
 	}
 }
 
@@ -52,5 +54,3 @@ func RetrieveInitialUrl(shortUrl string) string {
 	}
 	return result
 }
-
-const CacheDuration = 6 * time.Hour
